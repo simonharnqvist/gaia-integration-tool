@@ -1,0 +1,34 @@
+[project]
+name = "gaia-integration"
+version = "0.1.0"
+description = "Generic ingestion + join engine for integrating arbitrary catalogues with Gaia"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "pyspark>=4.0",
+    "dagster>=1.12",
+    "dagster-webserver",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
