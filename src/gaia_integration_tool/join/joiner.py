@@ -28,6 +28,9 @@ def join_catalogues(
         how="inner",
     )
 
+    if joined.count() == 0:
+        raise Warning("Join resulted in an empty DataFrame. Check join keys and data.")
+
     joined = joined.drop(f"{right_prefix}_{right_key}")
 
     joined = collapse_prefixed_columns(joined, left_prefix, right_prefix)
