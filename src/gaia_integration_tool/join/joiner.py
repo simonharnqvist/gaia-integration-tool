@@ -17,9 +17,14 @@ def join_catalogues(
     left_p = prefix_columns(left, left_prefix, exclude=[left_key])
     right_p = prefix_columns(right, right_prefix, exclude=[right_key])
 
+    if left_key not in left_p.columns:
+        raise ValueError(f"Left key '{left_key}' not found in left DataFrame.")
+    if right_key not in right_p.columns:
+        raise ValueError(f"Right key '{right_key}' not found in right DataFrame.")
+
     joined = left_p.join(
         right_p,
-        on=left_p[f"{left_key}"] == right_p[f"{right_key}"],
+        on=left_p[left_key] == right_p[right_key],
         how="inner",
     )
 
