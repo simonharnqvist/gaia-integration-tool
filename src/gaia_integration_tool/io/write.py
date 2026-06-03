@@ -34,6 +34,7 @@ def save_bucketed(
         df.write
         .format("parquet")
         .mode("overwrite")
+        .repartition(num_buckets, bucket_key) 
         .bucketBy(num_buckets, bucket_key)
         .sortBy(bucket_key)
         .option("path", path)
