@@ -4,13 +4,17 @@ from pyspark.sql.types import *
 import os
 import re
 from gaia_integration_tool.utils import errors
-
+from pathlib import Path
+import shutil
+from urllib.parse import urlparse
 
 def check_table_is_in_catalog(table_name: str, spark: SparkSession) -> None:
     if not table_name in [t.name for t in spark.catalog.listTables()]:
         raise errors.TableNotInCatalogError(
             f"Table {table_name} not found in Spark catalog. Found tables: {spark.catalog.listTables()}. Database: {spark.catalog.currentDatabase()}"
         )
+    else:
+        return True
 
 
 def get_table_location(spark: SparkSession, table_name: str) -> str:
@@ -20,6 +24,29 @@ def get_table_location(spark: SparkSession, table_name: str) -> str:
         if row.col_name.strip().lower() == "location":
             return row.data_type
     raise ValueError(f"Could not find location for table {table_name}")
+
+def table_location_exists(spark: SparkSession, table_name: str) -> bool:
+    """Check if table location already exists"""
+
+    warehouse = spark.conf.get("spark.sql.warehouse.dir")
+    table_path = Path(urlparse(f"{warehouse}/{table_name}").path)
+
+
+    if table_path.exists():
+        print(f"Table {table_name} exists at {table_path}")
+    else:
+        print(f"Table {table_name} does not exist at {table_path}")
+
+    return table_path.exists()
+
+    
+def delete_table_location(spark: SparkSession, table_name: str) -> None:
+    warehouse = spark.conf.get("spark.sql.warehouse.dir")
+    table_path = Path(urlparse(f"{warehouse}/{table_name}").path)
+
+    shutil.rmtree(table_path, ignore_errors=True)
+
+    print(f"Deleted table {table_name} at location {table_path}")
 
 
 def count_parquet_files(spark: SparkSession, table_name: str) -> int:

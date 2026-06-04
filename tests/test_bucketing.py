@@ -40,7 +40,7 @@ def test_bucket_save(spark, n_rows, buckets, key):
 
     df = make_table(n_rows, spark)
     bucket_save(
-        df = df, num_buckets=buckets, bucket_key=key, table_name=table_name, spark=spark
+        df = df, num_buckets=buckets, bucket_key=key, table_name=table_name, spark=spark, overwrite=True
     )
 
     assert is_correctly_bucketed(table_name, spark, buckets, key)
